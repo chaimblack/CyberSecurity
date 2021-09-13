@@ -88,7 +88,7 @@ function PrintNightmare-GoAway {
         $Path = "C:\Windows\System32\spool\drivers"
         $Acl = (Get-Item $Path).GetAccessControl('Access')
         if ($Logpath) {
-           $Acl | Select-object * |  ConvertTo-Json | Out-File $LogFileOldACL 
+           $Acl | Select-object * |  ConvertTo-Json -Depth 100 | Out-File $LogFileOldACL 
         }
         $Ar = New-Object  System.Security.AccessControl.FileSystemAccessRule("System", "Modify", "ContainerInherit, ObjectInherit", "None", "Deny")
         $Acl.AddAccessRule($Ar) | Out-Null
@@ -97,7 +97,7 @@ function PrintNightmare-GoAway {
         #Verify
         $FixACL = Get-Acl "C:\Windows\System32\spool\drivers"
         if ($Logpath) {
-           $FixACL | Select-object * |  ConvertTo-Json | Out-File $LogFileNewACL
+           $FixACL | Select-object * |  ConvertTo-Json -Depth 100 | Out-File $LogFileNewACL
         }
         
         if ($OutError -or $OutSuccess -or $OutResult) {
@@ -126,7 +126,7 @@ function PrintNightmare-GoAway {
         $Path = "C:\Windows\System32\spool\drivers"
         $Acl = (Get-Item $Path).GetAccessControl('Access')
         if ($Logpath) {
-           $Acl | Select-object * |  ConvertTo-Json | Out-File $LogFileOldACL 
+           $Acl | Select-object * |  ConvertTo-Json -Depth 100 | Out-File $LogFileOldACL 
         }
         $Ar = New-Object System.Security.AccessControl.FileSystemAccessRule("System", "Modify", "ContainerInherit, ObjectInherit", "None", "Deny")
         $Acl.RemoveAccessRule($Ar) | Out-Null
@@ -135,7 +135,7 @@ function PrintNightmare-GoAway {
         #Verify
         $FixACL = (Get-Item $Path).GetAccessControl('Access')
         if ($Logpath) {
-           $FixACL | Select-object * |  ConvertTo-Json | Out-File $LogFileNewACL
+           $FixACL | Select-object * |  ConvertTo-Json -Depth 100 | Out-File $LogFileNewACL
         }
         
         if ($OutError -or $OutSuccess -or $OutResult) {
@@ -164,7 +164,7 @@ function PrintNightmare-GoAway {
         $Path = "C:\Windows\System32\spool\drivers"
         $Acl = (Get-Item $Path).GetAccessControl('Access')
         if ($Logpath) {
-           $Acl | Select-object * |  ConvertTo-Json | Out-File $LogFileCurrentACL 
+           $Acl | Select-object * |  ConvertTo-Json -Depth 100 | Out-File $LogFileCurrentACL 
         }
         
         if ($OutResult) {
