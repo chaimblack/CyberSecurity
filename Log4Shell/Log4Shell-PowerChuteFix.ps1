@@ -81,7 +81,7 @@ Else {
     $stream.Close()
     $stream.Dispose()
     if ($ServiceExists) {
-        Start-Service -Name $ServiceName -WarningAction SilentlyContinue
+        Start-Service -Name $ServiceName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         if ((Get-Service -Name $ServiceName).Status -like "Running"){
             Write-Host "NoIssueFound"
         }
@@ -112,7 +112,7 @@ $stream.Dispose()
 if ($Entry){Write-Host "FailedToFix"}
 Else {
     if ($ServiceExists) {
-        Start-Service -Name $ServiceName -WarningAction SilentlyContinue
+        Start-Service -Name $ServiceName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         if ((Get-Service -Name $ServiceName).Status -like "Running"){
             Write-Host "Success"
         }
