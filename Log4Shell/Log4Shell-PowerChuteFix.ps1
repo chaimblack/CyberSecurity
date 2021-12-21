@@ -1,8 +1,9 @@
 <# 
 Written by Chaim Black
-Verion 1.0 
+Verion 1.1
 Created on 12/21/2021
-
+Change log:
+    Version 1.1: Adds support to check for APC PowerChute Network Shutdown service in addition to APC PowerChute Business Edition
 Warning!! This script has not been verified by APC nor has this been tested on many systems or versions. Run at your own risk. 
 
 This script is in response to to CVE-2021-44228 (Log4Shell) to remediate the APC PowerChute software.
@@ -34,13 +35,23 @@ if (!($TargetFile)) {
     break
 }
 
-$VerifyService = Get-Service -Name APCPBEAgent -ErrorAction SilentlyContinue
-if ($VerifyService) {
-    $ServiceExists = $True    
-    if ($VerifyService.Status -like "Running") {Stop-Service -Name 'APCPBEAgent' -Force}
-    if ((Get-Service -Name APCPBEAgent).Status -like "Running") {
-        Start-Sleep -Seconds 10
-        if ((Get-Service -Name APCPBEAgent).Status -like "Running") {Write-Host "FailedToStop"}
+$Service_APCPBEAgent = Get-Service -Name APCPBEAgent -ErrorAction SilentlyContinue
+$Service_PCNS1       = Get-Service -Name PCNS1 -ErrorAction SilentlyContinue
+
+if ($Service_APCPBEAgent) {
+    $ServiceName   = 'APCPBEAgent'
+    $ServiceExists = $True
+}
+if ($Service_PCNS1) {
+    $ServiceName   = 'PCNS1'
+    $ServiceExists = $True
+}
+
+if ($ServiceExists) {
+    if ((Get-Service -Name $ServiceName).Status -like "Running") { Stop-Service -Name $ServiceName -Force -ErrorAction SilentlyContinue}
+    if ((Get-Service -Name $ServiceName).Status -like "Running") {
+        Start-Sleep -Seconds 20
+        if ((Get-Service -Name $ServiceName).Status -like "Running") {Write-Host "FailedToStop"; break}
     }
 }
 
@@ -61,13 +72,13 @@ Else {
     $stream.Close()
     $stream.Dispose()
     if ($ServiceExists) {
-        Start-Service -Name APCPBEAgent -WarningAction SilentlyContinue
-        if ((Get-Service -Name APCPBEAgent).Status -like "Running"){
+        Start-Service -Name $ServiceName -WarningAction SilentlyContinue
+        if ((Get-Service -Name $ServiceName).Status -like "Running"){
             Write-Host "NoIssueFound"
         }
         Else {
             Start-Sleep -Seconds 10
-            if ((Get-Service -Name APCPBEAgent).Status -like "Running"){
+            if ((Get-Service -Name $ServiceName).Status -like "Running"){
                 Write-Host "NoIssueFound"
             }
             Else{
@@ -92,13 +103,13 @@ $stream.Dispose()
 if ($Entry){Write-Host "FailedToFix"}
 Else {
     if ($ServiceExists) {
-        Start-Service -Name APCPBEAgent -WarningAction SilentlyContinue
-        if ((Get-Service -Name APCPBEAgent).Status -like "Running"){
+        Start-Service -Name $ServiceName -WarningAction SilentlyContinue
+        if ((Get-Service -Name $ServiceName).Status -like "Running"){
             Write-Host "Success"
         }
         Else {
             Start-Sleep -Seconds 10
-            if ((Get-Service -Name APCPBEAgent).Status -like "Running"){
+            if ((Get-Service -Name $ServiceName).Status -like "Running"){
                 Write-Host "Success"
             }
             Else{
